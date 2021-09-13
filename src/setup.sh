@@ -145,6 +145,45 @@ install_node() {
   npm install --global yarn
 }
 
+setup_git(){
+  # setup the global gitignore file
+  print_cyan 'Setting up global .gitignore'
+  echo
+  if git config --global -l | grep core.excludesfile >/dev/null; then
+    echo 'It looks like you already have a global gitignore file setup (core.excludesfile).'
+    echo 'We will not modify it, but make sure you have the following values in it:'
+    echo
+    echo ' - .DS_Store'
+    echo ' - node_modules'
+    echo ' - dist'
+    echo ' - build'
+    echo ' - .webpack'
+    echo ' - .serverless'
+    echo
+  else
+    {
+      echo '.DS_Store'
+      echo '.vscode'
+      echo 'node_modules'
+      echo 'dist'
+      echo 'build'
+      echo '.webpack'
+      echo '.serverless'
+    } >>~/.gitignore_global
+    git config --global core.excludesfile ~/.gitignore_global
+  fi
+  # set the default git editor to nano
+  print_cyan 'Setting up git preferred editor to "nano"'
+  echo
+  if git config --global core.editor >/dev/null; then
+    echo 'It looks like you already have a preferred editor setup for git'
+    echo 'We will not modify this.'
+    echo
+  else
+    git config --global core.editor nano
+  fi
+}
+
 script_results() {
 
   HAS_ANY_ERROR=false
@@ -220,49 +259,10 @@ setup() {
   xcode-select --print-path >/dev/null 2>&1 || install_xcode
   which brew >/dev/null 2>&1 || install_brew
   [ -f "$HOME/.ssh/id_rsa" ] || setup_ssh_keys
-
-  # TODO: VSCode
-  ls /Applications/Visual\ Studio\ Codea.app >/dev/null 2>&1 || install_vs_code
+  ls /Applications/Visual\ Studio\ Code.app >/dev/null 2>&1 || install_vs_code
   command -v nvm >/dev/null || install_node
-  # nvm --version >/dev/null || install_node
-  # This is what they say to do, but doesn't work for me
 
-  # setup the global gitignore file
-  print_cyan 'Setting up global .gitignore'
-  echo
-  if git config --global -l | grep core.excludesfile >/dev/null; then
-    echo 'It looks like you already have a global gitignore file setup (core.excludesfile).'
-    echo 'We will not modify it, but make sure you have the following values in it:'
-    echo
-    echo ' - .DS_Store'
-    echo ' - node_modules'
-    echo ' - dist'
-    echo ' - build'
-    echo ' - .webpack'
-    echo ' - .serverless'
-    echo
-  else
-    {
-      echo '.DS_Store'
-      echo '.vscode'
-      echo 'node_modules'
-      echo 'dist'
-      echo 'build'
-      echo '.webpack'
-      echo '.serverless'
-    } >>~/.gitignore_global
-    git config --global core.excludesfile ~/.gitignore_global
-  fi
-  # set the default git editor to nano
-  print_cyan 'Setting up git preferred editor to "nano"'
-  echo
-  if git config --global core.editor >/dev/null; then
-    echo 'It looks like you already have a preferred editor setup for git'
-    echo 'We will not modify this.'
-    echo
-  else
-    git config --global core.editor nano
-  fi
+  setup_git
 
   echo
   print_cyan "We've gotten everything setup and you should be ready to go!"
@@ -270,5 +270,4 @@ setup() {
   script_results
 }
 
-# delay script execution until the entire file is transferred
 setup
