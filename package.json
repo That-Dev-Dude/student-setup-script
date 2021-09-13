@@ -1,0 +1,8 @@
+{
+  "name": "@thatdevdude/student-setup-script",
+  "version": "0.0.0",
+  "scripts": {
+    "upload": "sh scripts/upload.sh",
+    "test": "sh src/setup.sh"
+  }
+}
